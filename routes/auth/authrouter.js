@@ -1,6 +1,7 @@
 const express = require("express");
 const User = require("../../models/usermodel");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 const authRouter = express.Router();
 
@@ -33,6 +34,32 @@ authRouter.post("/register" , async(req , res)=>{
         user = await user.save();
         res.json(user);
 
+    } catch (error) {
+        return res.status(500).json(error);
+    }
+});
+
+
+// CREATING API FOR LOGIN THE USER
+
+authRouter.post("/login" , async (req , res)=>{
+    try {
+        const {username , password} = req.body;
+
+        const existUser = await User.findOne({username});
+        if(!existUser){
+            return res.status(404).json("Invalid username");
+        }
+        else{
+            const isMatch = await bcrypt.compare(password , existUser.password);
+            if(!isMatch){
+                return res.status(401).json("Invalid Password");
+            }
+            else{
+                const token =  jwt.sign({id:existUser._id} , "Securekey");
+                res.json({...existUser._doc , token});
+            }
+        }
     } catch (error) {
         return res.status(500).json(error);
     }
