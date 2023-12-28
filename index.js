@@ -1,6 +1,8 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const authRouter = require("./routes/auth/authrouter");
+const chatRouter = require("./routes/chats/chatroute");
+const messageRouter = require("./routes/messages/messagerouter");
 require("dotenv").config();
 
 const PORT = 3091;
@@ -18,6 +20,8 @@ mongoose.connect(process.env.DATABASE).then((res)=>{
 // ADDING ALL THE MIDDLEWARES
 app.use(express.json());
 app.use(authRouter);
+app.use(chatRouter);
+app.use(messageRouter);
 
 
 
